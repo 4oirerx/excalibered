@@ -6,26 +6,20 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
-LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int main(int argc, TCHAR *argv[])
 {
 	WNDCLASS wc = {};
 	MSG msg     = {};
 
-	wc.style         = CS_HREDRAW | CS_VREDRAW;
-	wc.cbClsExtra    = 0;
-	wc.cbWndExtra    = 0;
+	wc.lpfnWndProc   = WndProc;
 	wc.hInstance     = GetModuleHandle(0);
-	wc.hIcon         = LoadIcon(0, IDI_APPLICATION);
-	wc.hCursor       = LoadCursor(0, IDI_APPLICATION);
-	wc.lpszMenuName  = 0;
-	wc.lpszClassName = "D3DWindowClass";
-	
+	wc.lpszClassName = "D3DWindowClass";	
 	RegisterClass(&wc);
 
 	HWND hWnd = CreateWindow(wc.lpszClassName, "Hello DirectX", WS_OVERLAPPEDWINDOW,
-				CW_USEDEFAULT, CW_USEDEFAULT, 800, 800, NULL, NULL, 
+				CW_USEDEFAULT, CW_USEDEFAULT, 1080, 720, NULL, NULL, 
 				wc.hInstance, NULL);
 	if(hWnd == NULL) return 1;
 	
@@ -40,3 +34,23 @@ int main(int argc, TCHAR *argv[])
 	return 0;
 }
 
+LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			return 0;
+		case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+			HDC dc = BeginPaint(hWnd, &ps);
+			FillRect(dc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW+1));
+			EndPaint(hWnd, &ps);
+		}
+		return 0;
+	}
+
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+}
